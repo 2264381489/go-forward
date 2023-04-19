@@ -21,7 +21,7 @@ func main() {
 	router := httprouter.New()
 	InitLog()
 	// HTTP Server FORWARD  HTTP Request
-	router.GET("/v1/nodes", ForwardHandler)
+	router.GET("/alert/wechat/api", ForwardHandler)
 	// router panic handler
 	router.PanicHandler = func(w http.ResponseWriter, r *http.Request, i interface{}) {
 		glg.Errorf("panic: %+v", i)
@@ -32,16 +32,17 @@ func main() {
 
 func ForwardHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
 	u := &url.URL{
-		Scheme: "http",
-		Host:   "pcdn-env-dev-admin.qa.qiniu.io",
-		Path:   "/api/proxy/jarvis",
+		Scheme: " https",
+		Host:   "jarvis-alert.niulinkcloud.com",
+		Path:   "/alert/wechat/api",
 	}
+
 	signature, timestamp, nonce := generateSign()
 	u.Query().Set("signature", signature)
 	u.Query().Set("timestamp", timestamp)
 	u.Query().Set("nonce", nonce)
+	u.Query().Set("echostr", "test")
 	proxy := httputil.NewSingleHostReverseProxy(u)
-	request.Host = "pcdn-env-dev-admin.qa.qiniu.io"
 
 	proxy.ServeHTTP(writer, request)
 }
