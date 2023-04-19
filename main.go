@@ -32,7 +32,7 @@ func main() {
 
 func ForwardHandler(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
 	u := &url.URL{
-		Scheme: " https",
+		Scheme: "https",
 		Host:   "jarvis-alert.niulinkcloud.com",
 		Path:   "/alert/wechat/api",
 	}
