@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"runtime/debug"
 	"sort"
 	"strconv"
@@ -88,8 +89,7 @@ func InitLog() {
 
 func generateSign() (signature, timestamp, nonce string) {
 	timestamp = strconv.FormatInt(time.Now().Unix(), 10)
-	//token := os.Getenv("TOKEN")
-	token := "qiniu"
+	token := os.Getenv("TOKEN")
 	nonce = "" // 随机数
 	for i := 0; i < 20; i++ {
 		result, _ := rand.Int(rand.Reader, big.NewInt(100))
