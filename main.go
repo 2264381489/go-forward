@@ -79,7 +79,17 @@ func ForwardHandler(writer http.ResponseWriter, request *http.Request, _ httprou
 			Timeout: 60 * time.Second,
 		}
 		res, err := cli.Do(newRequest)
-		return res, nil
+		if err != nil {
+			glg.Errorf("Request Error: %+v", err)
+		}
+		if res.StatusCode != 200 {
+			requestDump, err := httputil.DumpRequest(newRequest, true)
+			if err != nil {
+				fmt.Println(err)
+			}
+			glg.Infof("request %s status code is not 200 ,status code is %d", requestDump, res.StatusCode)
+		}
+		return res, err
 	})
 	proxy.ServeHTTP(writer, request)
 }
