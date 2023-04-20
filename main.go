@@ -4,12 +4,10 @@ import (
 	"crypto/rand"
 	"crypto/sha1"
 	"fmt"
-	"io"
 	"math/big"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"os"
 	"runtime/debug"
 	"sort"
 	"strconv"
@@ -25,6 +23,7 @@ func main() {
 	InitLog()
 	// HTTP Server FORWARD  HTTP Request
 	router.GET("/alert/wechat/api", ForwardHandler)
+	router.POST("/alert/wechat/api", ForwardHandler)
 	// router panic handler
 	router.PanicHandler = func(w http.ResponseWriter, r *http.Request, i interface{}) {
 		glg.Errorf("stack :%s", string(debug.Stack()))
@@ -54,14 +53,7 @@ func ForwardHandler(writer http.ResponseWriter, request *http.Request, _ httprou
 	form.Add("timestamp", timestamp)
 	form.Add("nonce", nonce)
 	form.Add("echostr", "test")
-	body := form.Encode()
-	body = strings.TrimSpace(body)
-	unescape, err := url.QueryUnescape(body)
-	if err != nil {
-		panic(err)
-	}
-	request.Body = io.NopCloser(strings.NewReader(unescape))
-	request.ContentLength = int64(len(body))
+
 	proxy := httputil.NewSingleHostReverseProxy(u)
 
 	proxy.Transport = RoundTripperFunc(func(req *http.Request) (*http.Response, error) {
@@ -96,7 +88,8 @@ func InitLog() {
 
 func generateSign() (signature, timestamp, nonce string) {
 	timestamp = strconv.FormatInt(time.Now().Unix(), 10)
-	token := os.Getenv("TOKEN")
+	//token := os.Getenv("TOKEN")
+	token := "qiniu"
 	nonce = "" // 随机数
 	for i := 0; i < 20; i++ {
 		result, _ := rand.Int(rand.Reader, big.NewInt(100))
