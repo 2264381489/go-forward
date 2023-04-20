@@ -49,6 +49,11 @@ func ForwardHandler(writer http.ResponseWriter, request *http.Request, _ httprou
 	// 添加验签
 	request.ParseForm()
 	form := request.Form
+	requestDump, err := httputil.DumpRequest(request, true)
+	if err != nil {
+		fmt.Println(err)
+	}
+	glg.Infof("URL %s, request body %s", request.URL.String(), requestDump)
 	signature, timestamp, nonce := generateSign()
 	form.Add("signature", signature)
 	form.Add("timestamp", timestamp)
